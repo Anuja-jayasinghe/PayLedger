@@ -28,10 +28,10 @@ export default function BillsManager() {
   useEffect(() => {
     if (!user) return
     const fetchBills = async () => {
-        const { data, error } = await supabase
+      const { data, error } = await supabase
         .from('bills')
         .select('*, bill_users!inner(user_id)')
-        .eq('bill_users.user_id', user.id);
+        .eq('bill_users.user_id', user.id)
       
       if (error) console.error('Fetch bills error:', error)
       else setBills(data || [])
@@ -72,7 +72,7 @@ export default function BillsManager() {
     if (!selectedBill || !shareEmail) return
 
     const { data: targetUser, error: userError } = await supabase
-      .from('users') // Supabase auth users table
+      .from('users')
       .select('id, email')
       .eq('email', shareEmail)
       .single()
@@ -100,81 +100,113 @@ export default function BillsManager() {
     }
   }
 
-  if (loading) return <p className="text-white p-4">Loading bills...</p>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background text-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-neonBlue"></div>
+      </div>
+    )
+  }
 
   return (
-    <div className="text-white bg-background p-4 rounded shadow max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">💸 My Bills</h2>
-
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Name"
-          value={newBill.name}
-          onChange={(e) => setNewBill({ ...newBill, name: e.target.value })}
-          className="mr-2 px-2 py-1 rounded bg-black text-white border"
-        />
-        <input
-          type="text"
-          placeholder="Description"
-          value={newBill.description}
-          onChange={(e) => setNewBill({ ...newBill, description: e.target.value })}
-          className="mr-2 px-2 py-1 rounded bg-black text-white border"
-        />
-        <input
-          type="text"
-          placeholder="Payment method"
-          value={newBill.payment_method}
-          onChange={(e) => setNewBill({ ...newBill, payment_method: e.target.value })}
-          className="mr-2 px-2 py-1 rounded bg-black text-white border"
-        />
-        <button
-          onClick={handleCreateBill}
-          className="bg-green-600 px-3 py-1 rounded hover:bg-green-500"
-        >
-          ➕ Add Bill
-        </button>
-      </div>
-
-      <ul className="space-y-2">
-        {bills.map((bill) => (
-          <li
-            key={bill.id}
-            className="p-3 bg-black border border-gray-700 rounded flex justify-between items-center"
-          >
-            <div>
-              <div className="font-semibold">{bill.name}</div>
-              <div className="text-sm text-gray-400">{bill.description}</div>
-              <div className="text-sm">Method: {bill.payment_method}</div>
-            </div>
-            <button
-              onClick={() => setSelectedBill(bill)}
-              className="bg-blue-600 px-3 py-1 rounded hover:bg-blue-500 text-sm"
-            >
-              🔗 Share
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      {selectedBill && (
-        <div className="mt-6 bg-black border border-gray-700 p-4 rounded">
-          <h3 className="text-lg font-semibold mb-2">Share "{selectedBill.name}"</h3>
-          <input
-            type="email"
-            placeholder="Enter email to share with"
-            value={shareEmail}
-            onChange={(e) => setShareEmail(e.target.value)}
-            className="mr-2 px-2 py-1 rounded bg-black text-white border"
-          />
+    <div className="min-h-screen bg-background text-white p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">💸 My Bills</h1>
           <button
-            onClick={handleShare}
-            className="bg-blue-600 px-3 py-1 rounded hover:bg-blue-500"
+            onClick={() => supabase.auth.signOut()}
+            className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
           >
-            Share
+            Sign Out
           </button>
         </div>
-      )}
+
+        <div className="bg-black/40 backdrop-blur-md p-6 rounded-xl shadow-neon border border-neonBlue/20 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input
+              type="text"
+              placeholder="Name"
+              value={newBill.name}
+              onChange={(e) => setNewBill({ ...newBill, name: e.target.value })}
+              className="p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+            />
+            <input
+              type="text"
+              placeholder="Description"
+              value={newBill.description}
+              onChange={(e) => setNewBill({ ...newBill, description: e.target.value })}
+              className="p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+            />
+            <input
+              type="text"
+              placeholder="Payment method"
+              value={newBill.payment_method}
+              onChange={(e) => setNewBill({ ...newBill, payment_method: e.target.value })}
+              className="p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+            />
+          </div>
+          <button
+            onClick={handleCreateBill}
+            className="mt-4 w-full bg-neonGreen text-background px-4 py-3 rounded-lg font-semibold hover:bg-neonGreen/90 transition-colors"
+          >
+            ➕ Add Bill
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {bills.map((bill) => (
+            <div
+              key={bill.id}
+              className="bg-black/40 backdrop-blur-md p-6 rounded-xl shadow-neon border border-neonBlue/20"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-xl font-semibold text-neonBlue">{bill.name}</h3>
+                  <p className="text-mutedText mt-1">{bill.description}</p>
+                  <p className="text-sm mt-2">Method: {bill.payment_method}</p>
+                </div>
+                <button
+                  onClick={() => setSelectedBill(bill)}
+                  className="bg-neonBlue text-background px-4 py-2 rounded-lg hover:bg-neonBlue/90 transition-colors"
+                >
+                  🔗 Share
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {selectedBill && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-black/80 p-6 rounded-xl shadow-neon border border-neonBlue/20 max-w-md w-full">
+              <h3 className="text-xl font-semibold mb-4 text-neonBlue">
+                Share "{selectedBill.name}"
+              </h3>
+              <input
+                type="email"
+                placeholder="Enter email to share with"
+                value={shareEmail}
+                onChange={(e) => setShareEmail(e.target.value)}
+                className="w-full p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue mb-4"
+              />
+              <div className="flex space-x-4">
+                <button
+                  onClick={handleShare}
+                  className="flex-1 bg-neonBlue text-background px-4 py-3 rounded-lg font-semibold hover:bg-neonBlue/90 transition-colors"
+                >
+                  Share
+                </button>
+                <button
+                  onClick={() => setSelectedBill(null)}
+                  className="flex-1 bg-red-500/20 text-red-400 px-4 py-3 rounded-lg font-semibold hover:bg-red-500/30 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

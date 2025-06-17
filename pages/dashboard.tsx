@@ -71,105 +71,124 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-4 text-white bg-background min-h-screen max-w-xl mx-auto">
-      <h1 className="text-xl font-bold mb-4">Welcome, {user?.email}</h1>
-
-      <div className="bg-gray-900 p-4 rounded shadow">
-        <h2 className="text-lg font-semibold mb-2">Add Payment</h2>
-
-        <label className="block mb-2">
-          Bill Type:
-          <select
-            className="w-full mt-1 text-black p-2 rounded"
-            onChange={e => handleBillSelect(e.target.value)}
-            defaultValue=""
+    <div className="min-h-screen bg-background text-white p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Welcome, {user?.email}</h1>
+          <button
+            onClick={() => supabase.auth.signOut()}
+            className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
           >
-            <option value="" disabled>Select a bill</option>
-            {bills.map(b => (
-              <option key={b.id} value={b.id}>{b.name}</option>
-            ))}
-          </select>
-        </label>
+            Sign Out
+          </button>
+        </div>
 
-        <button
-          onClick={() => setShowNewBillForm(!showNewBillForm)}
-          className="text-blue-400 underline text-sm mb-4"
-        >
-          {showNewBillForm ? 'Cancel' : 'Add new bill type'}
-        </button>
+        <div className="bg-black/40 backdrop-blur-md p-6 rounded-xl shadow-neon border border-neonBlue/20">
+          <h2 className="text-xl font-semibold mb-6 text-neonBlue">Add Payment</h2>
 
-        {showNewBillForm && (
-          <div className="bg-gray-800 p-3 rounded mb-4">
-            <input
-              placeholder="Name"
-              className="w-full p-2 my-1 rounded text-black"
-              value={newBill.name}
-              onChange={e => setNewBill({ ...newBill, name: e.target.value })}
-            />
-            <input
-              placeholder="Description"
-              className="w-full p-2 my-1 rounded text-black"
-              value={newBill.description}
-              onChange={e => setNewBill({ ...newBill, description: e.target.value })}
-            />
-            <input
-              placeholder="Payment Method"
-              className="w-full p-2 my-1 rounded text-black"
-              value={newBill.paymentMethod}
-              onChange={e => setNewBill({ ...newBill, paymentMethod: e.target.value })}
-            />
-            <button onClick={handleAddNewBill} className="mt-2 bg-green-600 px-3 py-1 rounded">
-              Save Bill
+          <div className="space-y-4">
+            <div>
+              <label className="block text-mutedText mb-2">Bill Type</label>
+              <select
+                className="w-full p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+                onChange={e => handleBillSelect(e.target.value)}
+                defaultValue=""
+              >
+                <option value="" disabled>Select a bill</option>
+                {bills.map(b => (
+                  <option key={b.id} value={b.id}>{b.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              onClick={() => setShowNewBillForm(!showNewBillForm)}
+              className="text-neonBlue hover:text-neonBlue/80 transition-colors text-sm"
+            >
+              {showNewBillForm ? 'Cancel' : '+ Add new bill type'}
+            </button>
+
+            {showNewBillForm && (
+              <div className="bg-black/30 p-4 rounded-lg border border-neonBlue/20">
+                <div className="space-y-3">
+                  <input
+                    placeholder="Name"
+                    className="w-full p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+                    value={newBill.name}
+                    onChange={e => setNewBill({ ...newBill, name: e.target.value })}
+                  />
+                  <input
+                    placeholder="Description"
+                    className="w-full p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+                    value={newBill.description}
+                    onChange={e => setNewBill({ ...newBill, description: e.target.value })}
+                  />
+                  <input
+                    placeholder="Payment Method"
+                    className="w-full p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+                    value={newBill.paymentMethod}
+                    onChange={e => setNewBill({ ...newBill, paymentMethod: e.target.value })}
+                  />
+                  <button 
+                    onClick={handleAddNewBill} 
+                    className="w-full bg-neonGreen text-background px-4 py-3 rounded-lg font-semibold hover:bg-neonGreen/90 transition-colors"
+                  >
+                    Save Bill
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-mutedText mb-2">Date</label>
+                <input
+                  type="date"
+                  className="w-full p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+                  value={formData.date}
+                  onChange={e => setFormData({ ...formData, date: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-mutedText mb-2">Description</label>
+                <input
+                  type="text"
+                  className="w-full p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+                  value={formData.description}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-mutedText mb-2">Amount</label>
+                <input
+                  type="number"
+                  className="w-full p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+                  value={formData.amount}
+                  onChange={e => setFormData({ ...formData, amount: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-mutedText mb-2">Payment Method</label>
+                <input
+                  type="text"
+                  className="w-full p-3 rounded-lg bg-black/50 border border-neonBlue/20 text-white focus:border-neonBlue focus:ring-1 focus:ring-neonBlue"
+                  value={formData.paymentMethod}
+                  onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-neonBlue text-background px-4 py-3 rounded-lg font-semibold hover:bg-neonBlue/90 transition-colors"
+            >
+              Submit Payment
             </button>
           </div>
-        )}
-
-        <label className="block mb-2">
-          Date:
-          <input
-            type="date"
-            className="w-full p-2 mt-1 text-black rounded"
-            value={formData.date}
-            onChange={e => setFormData({ ...formData, date: e.target.value })}
-          />
-        </label>
-
-        <label className="block mb-2">
-          Description:
-          <input
-            type="text"
-            className="w-full p-2 mt-1 text-black rounded"
-            value={formData.description}
-            onChange={e => setFormData({ ...formData, description: e.target.value })}
-          />
-        </label>
-
-        <label className="block mb-2">
-          Amount:
-          <input
-            type="number"
-            className="w-full p-2 mt-1 text-black rounded"
-            value={formData.amount}
-            onChange={e => setFormData({ ...formData, amount: e.target.value })}
-          />
-        </label>
-
-        <label className="block mb-4">
-          Payment Method:
-          <input
-            type="text"
-            className="w-full p-2 mt-1 text-black rounded"
-            value={formData.paymentMethod}
-            onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })}
-          />
-        </label>
-
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-500"
-        >
-          Submit Payment
-        </button>
+        </div>
       </div>
     </div>
   )
