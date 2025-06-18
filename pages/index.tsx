@@ -1,33 +1,26 @@
 import { DollarSign, Calendar, Target, TrendingUp, ArrowRight, Zap, Shield, Sparkles } from 'lucide-react'
 import Link from 'next/link'
-import Navigation from '@/pages/Navigation'
+import Navigation from '@/components/Navigation'
+import Head from 'next/head'
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-white overflow-hidden">
+      <Head>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      </Head>
       <Navigation />
       
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-neonBlue/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-neonGreen/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-neonBlue/5 rounded-full blur-3xl animate-pulse delay-500"></div>
-        </div>
-        
         <div className="max-w-6xl mx-auto text-center relative z-10">
-          <div className="animate-float mb-8">
-            <div className="relative inline-block">
-              <DollarSign className="w-24 h-24 text-neonBlue mx-auto mb-6" />
-              <Sparkles className="w-8 h-8 text-neonGreen absolute -top-2 -right-2 animate-pulse" />
-            </div>
+          <div className="mb-8 relative inline-block pb-6">
+            <img src="/logo.png" alt="PayLedger Logo" className="w-24 h-24 mx-auto animate-float" />
+            <Sparkles className="w-8 h-8 text-neonGreen absolute -top-2 -right-2 animate-pulse sparkle-animate" />
           </div>
-          
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-neonBlue via-white to-neonGreen bg-clip-text text-transparent">
+          <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-neonBlue via-white to-neonGreen bg-clip-text text-transparent pb-10">
             PayLedger
           </h1>
-          
           <p className="text-2xl md:text-3xl text-white mb-4 max-w-4xl mx-auto font-light">
             Never miss a bill again.
           </p>
@@ -35,21 +28,12 @@ export default function Home() {
             Built from personal frustration with scattered bills and forgotten payments. 
             Simple, beautiful, and actually works.
           </p>
-          
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link 
               href="/login" 
               className="bg-gradient-to-r from-neonBlue to-neonGreen text-background px-12 py-5 rounded-xl font-bold text-lg shadow-neon hover:shadow-neonGreen hover:scale-105 transition-all duration-300 flex items-center space-x-3 group"
             >
-              <Zap className="w-6 h-6 group-hover:rotate-12 transition-transform" />
               <span>Start Organizing</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-            </Link>
-            <Link 
-              href="/dashboard" 
-              className="border-2 border-neonBlue text-neonBlue px-12 py-5 rounded-xl font-bold text-lg hover:bg-neonBlue/20 hover:shadow-neon transition-all duration-300 backdrop-blur-sm"
-            >
-              See It In Action
             </Link>
           </div>
         </div>
@@ -151,21 +135,21 @@ export default function Home() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center p-4 bg-neonBlue/10 rounded-lg">
                     <span className="font-semibold">Electricity Bill</span>
-                    <span className="text-neonGreen">$89.50</span>
+                    <span className="text-neonGreen">Rs. 3,200.00</span>
                   </div>
                   <div className="flex justify-between items-center p-4 bg-neonGreen/10 rounded-lg">
                     <span className="font-semibold">Internet</span>
-                    <span className="text-neonBlue">$65.00</span>
+                    <span className="text-neonBlue">Rs. 1,800.00</span>
                   </div>
                   <div className="flex justify-between items-center p-4 bg-yellow-500/10 rounded-lg">
                     <span className="font-semibold">Phone Bill</span>
-                    <span className="text-yellow-400">$45.00</span>
+                    <span className="text-yellow-400">Rs. 2,500.00</span>
                   </div>
                 </div>
                 <div className="mt-6 p-4 bg-gradient-to-r from-neonBlue/20 to-neonGreen/20 rounded-lg">
                   <div className="text-center">
                     <p className="text-sm text-mutedText">Total This Month</p>
-                    <p className="text-2xl font-bold text-white">$199.50</p>
+                    <p className="text-2xl font-bold text-white">Rs. 7,500.00</p>
                   </div>
                 </div>
               </div>

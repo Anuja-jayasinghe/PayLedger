@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import Head from 'next/head'
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -40,8 +41,13 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Component {...pageProps} />
-    </div>
+    <>
+      <Head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+      </Head>
+      <div className="min-h-screen bg-background">
+        <Component {...pageProps} />
+      </div>
+    </>
   );
 }

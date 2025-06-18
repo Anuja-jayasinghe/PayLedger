@@ -12,7 +12,7 @@ export default function Login() {
   }
 
   useEffect(() => {
-    // If user already logged in, redirect to dashboard
+    // If user already logged in, redirect to home
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         window.location.href = '/dashboard'
