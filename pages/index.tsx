@@ -1,6 +1,6 @@
 import { DollarSign, Calendar, Target, TrendingUp, ArrowRight, Zap, Shield, Sparkles } from 'lucide-react'
 import Link from 'next/link'
-import Navigation from '@/components/Navigation'
+import Header from '@/components/Navigation'
 import Head from 'next/head'
 
 export default function Home() {
@@ -9,7 +9,7 @@ export default function Home() {
       <Head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
       </Head>
-      <Navigation />
+      <Header />
       
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
