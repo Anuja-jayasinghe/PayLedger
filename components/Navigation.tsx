@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { DollarSign } from 'lucide-react'
 
 export default function Navigation() {
   return (
@@ -7,7 +6,7 @@ export default function Navigation() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center space-x-2 text-neonBlue font-bold text-xl">
-            <DollarSign className="w-6 h-6" />
+            <img src="/logo.png" alt="PayLedger Logo" className="w-8 h-8 object-contain" />
             <span>PayLedger</span>
           </Link>
           
