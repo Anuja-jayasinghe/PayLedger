@@ -9,7 +9,7 @@ export default function Navigation() {
             <img src="/logo.png" alt="PayLedger Logo" className="w-8 h-8 object-contain" />
             <span>PayLedger</span>
           </Link>
-          
+
           <div className="flex items-center space-x-4">
             <Link 
               href="/login" 
@@ -28,4 +28,4 @@ export default function Navigation() {
       </div>
     </nav>
   )
-} 
+}
