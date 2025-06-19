@@ -1,5 +1,3 @@
-
-
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
@@ -50,6 +48,12 @@ export default function Login() {
           />
         </svg>
         <span>Sign in with Google</span>
+      </button>
+      <button
+        onClick={() => window.location.href = '/'}
+        className="mt-4 bg-white/10 text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors"
+      >
+        Go to Home
       </button>
     </div>
   )
