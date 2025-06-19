@@ -10,9 +10,11 @@ export default function App({ Component, pageProps }: AppProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Define protected routes
+    const protectedRoutes = ['/dashboard', '/billmanager', '/transactions'];
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session && router.pathname !== '/login') {
+      if (!session && protectedRoutes.includes(router.pathname)) {
         router.push('/login');
       } else if (session && router.pathname === '/login') {
         router.push('/dashboard');
@@ -22,7 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session && router.pathname !== '/login') {
+      if (!session && protectedRoutes.includes(router.pathname)) {
         router.push('/login');
       } else if (session && router.pathname === '/login') {
         router.push('/dashboard');
