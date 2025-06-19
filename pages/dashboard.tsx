@@ -34,13 +34,33 @@ export default function Dashboard() {
   const [chartType, setChartType] = useState<'bar' | 'line' | 'pie'>('bar')
 
   useEffect(() => {
-    supabase
-      .from('payments')
-      .select('*')
-      .then(({ data, error }) => {
-        if (data) setPayments(data)
-        if (error) console.error(error)
-      })
+    const fetchPayments = async () => {
+      const {
+        data: { user },
+        error: userError
+      } = await supabase.auth.getUser()
+
+      if (userError) {
+        console.error('User fetch error:', userError.message)
+        return
+      }
+
+      console.log('Logged in user ID:', user?.id)
+
+      const { data, error } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('user_id', user?.id)
+
+      if (error) {
+        console.error('Payments fetch error:', error.message)
+      } else {
+        console.log('Fetched payments:', data)
+        setPayments(data)
+      }
+    }
+
+    fetchPayments()
   }, [])
 
   const monthPayments = payments.filter(p => p.month === selectedMonthIndex + 1 && p.year === selectedYear)
