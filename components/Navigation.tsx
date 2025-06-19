@@ -32,7 +32,7 @@ export default function Header() {
             className="flex items-center space-x-3 text-neonBlue font-bold text-xl sm:text-2xl hover:text-neonGreen transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-neonBlue/50 rounded-lg p-2"
             aria-label="PayLedger Home"
           >
-            <DollarSign className="w-6 sm:w-8 h-6 sm:h-8" />
+            <img src="/logo.png" alt="PayLedger Logo" className="w-8 h-8 object-contain" />
             <span className="hidden sm:block">PayLedger</span>
           </Link>
 
