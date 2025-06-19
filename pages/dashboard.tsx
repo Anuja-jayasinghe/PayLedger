@@ -1,7 +1,7 @@
 // pages/dashboard.tsx
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { Bar, Line, Pie } from 'react-chartjs-2'
+import { Bar, Line, Pie, Chart as ChartJSComponent } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Tooltip, Legend } from 'chart.js'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -57,6 +57,19 @@ export default function Dashboard() {
       } else {
         console.log('Fetched payments:', data)
         setPayments(data)
+        if (data && data.length > 0) {
+          const latest = data.reduce((max, curr) => {
+            if (
+              curr.year > max.year ||
+              (curr.year === max.year && curr.month > max.month)
+            ) {
+              return curr
+            }
+            return max
+          }, data[0])
+          setSelectedMonthIndex(latest.month - 1)
+          setSelectedYear(latest.year)
+        }
       }
     }
 
@@ -80,15 +93,55 @@ export default function Dashboard() {
   const monthKeys = Object.keys(monthGrouped)
   const monthData = Object.values(monthGrouped)
 
-  const chartData = {
+  // Color palette for 12 months
+  const monthColors = [
+    '#38BDF8', '#14F195', '#F472B6', '#FACC15', '#F97316', '#A78BFA', '#34D399', '#F87171', '#60A5FA', '#FBBF24', '#10B981', '#6366F1'
+  ]
+
+  // Distinct color palette for categories
+  const categoryColors = [
+    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF', '#B4FF9F', '#FFB4E6', '#B4D4FF'
+  ]
+
+  // Data for bar+line combo
+  const barLineChartData = {
     labels: monthKeys,
     datasets: [
       {
         label: 'Monthly Spending',
         data: monthData,
-        backgroundColor: '#38BDF8',
+        backgroundColor: monthKeys.map((_, i) => monthColors[i % monthColors.length]),
+        borderColor: '#fff',
+        borderWidth: 1,
+        type: 'bar' as const,
+      },
+      {
+        label: 'Trend',
+        data: monthData,
+        type: 'line' as const,
         borderColor: '#14F195',
+        backgroundColor: 'rgba(20, 241, 149, 0.2)',
         borderWidth: 2,
+        pointRadius: 3,
+        fill: false,
+        tension: 0.3,
+      },
+    ],
+  }
+
+  // Data for line chart only
+  const lineChartData = {
+    labels: monthKeys,
+    datasets: [
+      {
+        label: 'Monthly Spending',
+        data: monthData,
+        borderColor: '#14F195',
+        backgroundColor: 'rgba(20, 241, 149, 0.2)',
+        borderWidth: 2,
+        pointRadius: 3,
+        fill: false,
+        tension: 0.3,
       },
     ],
   }
@@ -98,7 +151,7 @@ export default function Dashboard() {
     datasets: [
       {
         data: Object.values(categoryBreakdown),
-        backgroundColor: ['#38BDF8', '#14F195', '#F472B6', '#FACC15', '#F97316'],
+        backgroundColor: Object.keys(categoryBreakdown).map((_, i) => categoryColors[i % categoryColors.length]),
       },
     ],
   }
@@ -117,6 +170,54 @@ export default function Dashboard() {
     setSelectedYear(newYear)
   }
 
+  // Custom legend for monthly spending pie chart
+  const renderMonthLegend = () => {
+    const items = monthKeys.map((label, i) => (
+      <div key={label} style={{ display: 'flex', alignItems: 'center', marginBottom: 6 }}>
+        <span style={{
+          display: 'inline-block',
+          width: 12,
+          height: 12,
+          backgroundColor: monthColors[i % monthColors.length],
+          borderRadius: 2,
+          marginRight: 8,
+        }} />
+        <span style={{ fontSize: 11 }}>{label}</span>
+      </div>
+    ))
+    // Split into two columns
+    const mid = Math.ceil(items.length / 2)
+    return (
+      <div style={{ display: 'flex', flexDirection: 'row', gap: 16 }}>
+        <div>{items.slice(0, mid)}</div>
+        <div>{items.slice(mid)}</div>
+      </div>
+    )
+  }
+
+  // Custom legend for category pie chart
+  const renderCategoryLegend = () => {
+    const keys = Object.keys(categoryBreakdown)
+    if (keys.length === 0) return null
+    return (
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16, marginTop: 16 }}>
+        {keys.map((cat, i) => (
+          <div key={cat} style={{ display: 'flex', alignItems: 'center', minWidth: 120 }}>
+            <span style={{
+              display: 'inline-block',
+              width: 14,
+              height: 14,
+              backgroundColor: categoryColors[i % categoryColors.length],
+              borderRadius: 3,
+              marginRight: 8,
+            }} />
+            <span style={{ fontSize: 13 }}>{cat}</span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background text-white">
       <Header />
@@ -128,7 +229,7 @@ export default function Dashboard() {
             <button onClick={() => changeMonth(1)} className="text-xl">&rarr;</button>
           </div>
           <Link
-            href="/billmanager"
+            href="/billManager"
             className="bg-neonGreen text-background px-4 py-2 rounded shadow hover:scale-105 transition"
           >
             + Add New Record
@@ -175,16 +276,47 @@ export default function Dashboard() {
                 ))}
               </div>
             </div>
-            {chartType === 'bar' && <Bar data={chartData} />} 
-            {chartType === 'line' && <Line data={chartData} />} 
-            {chartType === 'pie' && <Pie data={chartData} />} 
+            {chartType === 'bar' && (
+              <ChartJSComponent
+                type="bar"
+                data={barLineChartData}
+                options={{}}
+              />
+            )}
+            {chartType === 'line' && <Line data={lineChartData} />} 
+            {chartType === 'pie' && (
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%', gap: 32 }}>
+                <div style={{ width: 320, height: 240 }}>
+                  <Pie
+                    data={pieData}
+                    width={320}
+                    height={240}
+                    options={{
+                      plugins: {
+                        legend: { display: false },
+                      },
+                    }}
+                  />
+                </div>
+                <div style={{ minWidth: 120 }}>{renderMonthLegend()}</div>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Monthly Breakdown */}
         <div className="bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-lg">
           <h3 className="text-base font-semibold mb-4">Spending by Category ({monthNames[selectedMonthIndex]})</h3>
-          <Pie data={pieData} />
+          {Object.keys(categoryBreakdown).length === 0 ? (
+            <div className="text-center text-sm text-gray-400 py-8">No data for this month</div>
+          ) : (
+            <>
+              <div style={{ width: 320, height: 220, margin: '0 auto' }}>
+                <Pie data={pieData} width={320} height={220} options={{ plugins: { legend: { display: false } } }} />
+              </div>
+              {renderCategoryLegend()}
+            </>
+          )}
         </div>
       </div>
       <Footer />
