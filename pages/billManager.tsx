@@ -25,6 +25,12 @@ export default function BillManager() {
   const [userId, setUserId] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const [moneyReceived, setMoneyReceived] = useState("")
+  const [moneyReceivedMonth, setMoneyReceivedMonth] = useState(new Date().getMonth() + 1)
+  const [moneyReceivedYear, setMoneyReceivedYear] = useState(new Date().getFullYear())
+  const [isSavingMoney, setIsSavingMoney] = useState(false)
+
   const router = useRouter()
 
   useEffect(() => {
@@ -146,6 +152,33 @@ export default function BillManager() {
     setIsModalOpen(false)
     setIsSubmitting(false)
     form.reset()
+  }
+
+  const handleSaveMoneyReceived = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!userId || !moneyReceived) return
+
+    setIsSavingMoney(true)
+
+    const { error } = await supabase.from("monthly_finances").upsert(
+      {
+        user_id: userId,
+        month: moneyReceivedMonth,
+        year: moneyReceivedYear,
+        money_received: Number.parseFloat(moneyReceived),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,month,year" }
+    )
+
+    setIsSavingMoney(false)
+
+    if (error) {
+      alert("Failed to save money received: " + error.message)
+    } else {
+      alert("Money received saved successfully!")
+      setMoneyReceived("") // Reset form
+    }
   }
 
   return (
@@ -306,6 +339,110 @@ export default function BillManager() {
                   <>
                     <Check className="w-5 h-5" />
                     <span>Save Payment</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Record Money Received Form */}
+        <div className="mt-8 bg-black/40 backdrop-blur-md p-8 rounded-2xl border border-neonGreen/20 shadow-neon">
+          <div className="flex items-center space-x-3 mb-8">
+            <div className="bg-neonGreen/20 p-3 rounded-lg">
+              <DollarSign className="w-6 h-6 text-neonGreen" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold">Record Money Received</h2>
+              <p className="text-mutedText text-sm">Add the total money received for a month.</p>
+            </div>
+          </div>
+
+          <form onSubmit={handleSaveMoneyReceived} className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="flex items-center space-x-2 text-sm font-medium">
+                  <Calendar className="w-4 h-4 text-neonGreen" />
+                  <span>Month</span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={moneyReceivedMonth}
+                    onChange={(e) => setMoneyReceivedMonth(Number(e.target.value))}
+                    className="w-full px-4 py-3 rounded-xl bg-black/60 border border-neonGreen/30 focus:border-neonGreen focus:outline-none focus:ring-2 focus:ring-neonGreen/20 text-white font-medium transition-all duration-300 appearance-none cursor-pointer"
+                    required
+                  >
+                    {Array.from({ length: 12 }, (_, i) => (
+                      <option key={i + 1} value={i + 1} className="bg-black text-white">
+                        {new Date(0, i).toLocaleString("default", { month: "long" })}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                    <svg className="w-5 h-5 text-neonGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="flex items-center space-x-2 text-sm font-medium">
+                  <Calendar className="w-4 h-4 text-neonGreen" />
+                  <span>Year</span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={moneyReceivedYear}
+                    onChange={(e) => setMoneyReceivedYear(Number(e.target.value))}
+                    className="w-full px-4 py-3 rounded-xl bg-black/60 border border-neonGreen/30 focus:border-neonGreen focus:outline-none focus:ring-2 focus:ring-neonGreen/20 text-white font-medium transition-all duration-300 appearance-none cursor-pointer"
+                    required
+                  >
+                    {[2023, 2024, 2025].map((y) => (
+                      <option key={y} value={y} className="bg-black text-white">
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                    <svg className="w-5 h-5 text-neonGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="flex items-center space-x-2 text-sm font-medium">
+                <DollarSign className="w-4 h-4 text-neonGreen" />
+                <span>Amount Received (Rs)</span>
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                value={moneyReceived}
+                onChange={(e) => setMoneyReceived(e.target.value)}
+                placeholder="0.00"
+                className="w-full px-4 py-3 rounded-xl bg-black/60 border border-neonGreen/30 focus:border-neonGreen focus:outline-none focus:ring-2 focus:ring-neonGreen/20 text-white transition-all duration-300"
+                required
+              />
+            </div>
+
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={isSavingMoney}
+                className="w-full bg-gradient-to-r from-neonGreen to-purple-500 text-background px-6 py-4 rounded-xl font-bold text-lg shadow-neon hover:shadow-neonGreen hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center space-x-3"
+              >
+                {isSavingMoney ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-background/30 border-t-background rounded-full animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-5 h-5" />
+                    <span>Save Money Received</span>
                   </>
                 )}
               </button>
