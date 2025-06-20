@@ -5,13 +5,31 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { useRouter } from "next/router"
-import { Plus, CreditCard, Calendar, FileText, DollarSign, X, Check, ArrowLeft } from "lucide-react"
+import {
+  Plus,
+  CreditCard,
+  Calendar,
+  FileText,
+  DollarSign,
+  X,
+  Check,
+  ArrowLeft,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react"
 
 interface Bill {
   id: string
   name: string
   description: string
   payment_method: string
+}
+
+interface Notification {
+  id: string
+  type: "success" | "error"
+  title: string
+  message: string
 }
 
 export default function BillManager() {
@@ -25,6 +43,7 @@ export default function BillManager() {
   const [userId, setUserId] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [notifications, setNotifications] = useState<Notification[]>([])
 
   const [moneyReceived, setMoneyReceived] = useState("")
   const [moneyReceivedMonth, setMoneyReceivedMonth] = useState(new Date().getMonth() + 1)
@@ -32,6 +51,22 @@ export default function BillManager() {
   const [isSavingMoney, setIsSavingMoney] = useState(false)
 
   const router = useRouter()
+
+  // Notification functions
+  const showNotification = (type: "success" | "error", title: string, message: string) => {
+    const id = Date.now().toString()
+    const notification = { id, type, title, message }
+    setNotifications((prev) => [...prev, notification])
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      removeNotification(id)
+    }, 5000)
+  }
+
+  const removeNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id))
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,10 +132,19 @@ export default function BillManager() {
     setLoading(false)
 
     if (error) {
-      alert("Failed to add payment: " + error.message)
+      showNotification("error", "Payment Failed", `Failed to add payment: ${error.message}`)
     } else {
-      alert("Payment added successfully!")
-      router.push("/dashboard")
+      showNotification("success", "Payment Added", "Payment has been successfully recorded!")
+      // Clear form
+      setSelectedBillId("")
+      setAmount("")
+      setDate("")
+      setNotes("")
+      setAccountNumber("")
+      // Navigate after a short delay to show the success message
+      setTimeout(() => {
+        router.push("/dashboard")
+      }, 1500)
     }
   }
 
@@ -128,7 +172,7 @@ export default function BillManager() {
       .single()
 
     if (billError || !newBill) {
-      alert("Failed to add bill: " + billError?.message)
+      showNotification("error", "Bill Creation Failed", `Failed to add bill: ${billError?.message}`)
       setIsSubmitting(false)
       return
     }
@@ -139,7 +183,7 @@ export default function BillManager() {
     })
 
     if (linkError) {
-      alert("Failed to assign bill to user: " + linkError.message)
+      showNotification("error", "Bill Assignment Failed", `Failed to assign bill to user: ${linkError.message}`)
       setIsSubmitting(false)
       return
     }
@@ -148,7 +192,7 @@ export default function BillManager() {
     setSelectedBillId(newBill.id)
     if (account_number) setAccountNumber(account_number)
 
-    alert("Bill added successfully!")
+    showNotification("success", "Bill Added", `${name} has been successfully added to your bill types!`)
     setIsModalOpen(false)
     setIsSubmitting(false)
     form.reset()
@@ -168,15 +212,20 @@ export default function BillManager() {
         money_received: Number.parseFloat(moneyReceived),
         updated_at: new Date().toISOString(),
       },
-      { onConflict: "user_id,month,year" }
+      { onConflict: "user_id,month,year" },
     )
 
     setIsSavingMoney(false)
 
     if (error) {
-      alert("Failed to save money received: " + error.message)
+      showNotification("error", "Save Failed", `Failed to save money received: ${error.message}`)
     } else {
-      alert("Money received saved successfully!")
+      const monthName = new Date(0, moneyReceivedMonth - 1).toLocaleString("default", { month: "long" })
+      showNotification(
+        "success",
+        "Money Received Saved",
+        `Successfully recorded Rs. ${moneyReceived} for ${monthName} ${moneyReceivedYear}`,
+      )
       setMoneyReceived("") // Reset form
     }
   }
@@ -285,13 +334,31 @@ export default function BillManager() {
                 <Calendar className="w-4 h-4 text-neonBlue" />
                 <span>Payment Date</span>
               </label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-black/60 border border-neonBlue/30 focus:border-neonBlue focus:outline-none focus:ring-2 focus:ring-neonBlue/20 text-white transition-all duration-300"
-                required
-              />
+              <div className="relative">
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full pl-4 pr-10 py-3 rounded-xl bg-black/60 border border-neonBlue/30 focus:border-neonBlue focus:outline-none focus:ring-2 focus:ring-neonBlue/20 text-white transition-all duration-300 appearance-none"
+                  required
+                />
+                <style jsx>{`
+                  input[type="date"]::-webkit-calendar-picker-indicator {
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    padding: 0;
+                    margin: 0;
+                    opacity: 0;
+                    cursor: pointer;
+                  }
+                `}</style>
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <Calendar className="w-5 h-5 text-neonBlue" />
+                </div>
+              </div>
             </div>
 
             {/* Bill Description (Read-only) */}
@@ -529,6 +596,50 @@ export default function BillManager() {
           </div>
         </div>
       )}
+
+      {/* Custom Notifications */}
+      <div className="fixed top-4 right-4 z-50 space-y-3">
+        {notifications.map((notification) => (
+          <div
+            key={notification.id}
+            className={`max-w-sm w-full bg-black/90 backdrop-blur-md border rounded-2xl p-4 shadow-lg transform transition-all duration-300 animate-in slide-in-from-right ${
+              notification.type === "success"
+                ? "border-neonGreen/30 shadow-neonGreen/20"
+                : "border-red-500/30 shadow-red-500/20"
+            }`}
+          >
+            <div className="flex items-start space-x-3">
+              <div
+                className={`p-2 rounded-lg flex-shrink-0 ${
+                  notification.type === "success" ? "bg-neonGreen/20" : "bg-red-500/20"
+                }`}
+              >
+                {notification.type === "success" ? (
+                  <CheckCircle className={`w-5 h-5 text-neonGreen`} />
+                ) : (
+                  <AlertCircle className={`w-5 h-5 text-red-400`} />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4
+                  className={`text-sm font-semibold ${
+                    notification.type === "success" ? "text-neonGreen" : "text-red-400"
+                  }`}
+                >
+                  {notification.title}
+                </h4>
+                <p className="text-sm text-mutedText mt-1 leading-relaxed">{notification.message}</p>
+              </div>
+              <button
+                onClick={() => removeNotification(notification.id)}
+                className="text-mutedText hover:text-white transition-colors duration-300 p-1 flex-shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
