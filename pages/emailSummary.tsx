@@ -4,15 +4,24 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/router"
 import { supabase } from "@/lib/supabaseClient"
 import emailjs from "@emailjs/browser"
-import { Mail, Calendar, DollarSign, Send, ArrowLeft, CheckCircle, X, FileText, TrendingUp } from "lucide-react"
+import {
+  Mail,
+  Calendar,
+  Send,
+  ArrowLeft,
+  CheckCircle,
+  X,
+  FileText,
+  TrendingUp,
+} from "lucide-react"
 
 export default function EmailSummaryPage() {
   const [userId, setUserId] = useState<string | null>(null)
   const [recipient, setRecipient] = useState("")
-  const [receivedAmount, setReceivedAmount] = useState("")
-  const [month, setMonth] = useState<number>(new Date().getMonth()) // default to previous month
+  const [month, setMonth] = useState<number>(new Date().getMonth() + 1)
   const [year, setYear] = useState<number>(new Date().getFullYear())
   const [payments, setPayments] = useState<any[]>([])
+  const [moneyReceived, setMoneyReceived] = useState<number>(0)
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const router = useRouter()
@@ -26,51 +35,92 @@ export default function EmailSummaryPage() {
       if (error || !user) return router.push("/login")
       setUserId(user.id)
     }
-
     fetchUser()
-  }, [])
+  }, [router])
 
   useEffect(() => {
     if (!userId || !month || !year) return
 
-    const fetchPayments = async () => {
-      const { data, error } = await supabase
+    const fetchData = async () => {
+      const { data: paymentsData } = await supabase
         .from("payments")
         .select("*")
         .eq("user_id", userId)
         .eq("month", month)
         .eq("year", year)
 
-      if (!error && data) {
-        setPayments(data)
-      }
+      setPayments(paymentsData || [])
+
+      const { data: financesData } = await supabase
+        .from("monthly_finances")
+        .select("money_received")
+        .eq("user_id", userId)
+        .eq("month", month)
+        .eq("year", year)
+        .single()
+
+      setMoneyReceived(Number(financesData?.money_received || 0))
     }
 
-    fetchPayments()
+    fetchData()
   }, [userId, month, year])
 
+  const total = payments.reduce((sum, p) => sum + Number(p.amount), 0)
+  const balance = moneyReceived - total
+
   const sendEmail = async () => {
+    if (!recipient) {
+      alert("Please enter recipient email.")
+      return
+    }
+
     setLoading(true)
 
-    const grouped = payments.reduce(
-      (acc, curr) => {
-        const key = curr.bill_type
-        if (!acc[key]) acc[key] = []
-        acc[key].push(curr)
-        return acc
-      },
-      {} as Record<string, any[]>,
-    )
+    const grouped = payments.reduce((acc, curr) => {
+      const key = curr.bill_type
+      if (!acc[key]) acc[key] = []
+      acc[key].push(curr)
+      return acc
+    }, {} as Record<string, any[]>)
 
     const bill_summary = Object.entries(grouped)
       .map(([type, entries]) => {
-        const lines = (entries as any[]).map((e) => `• ${e.account_number || "N/A"} - LKR ${e.amount}`).join("\n")
+        const lines = (entries as any[])
+          .map((e) => `• ${e.account_number || "N/A"} - LKR ${Number(e.amount).toFixed(2)}`)
+          .join("\n")
         return `\n${type}:\n${lines}`
       })
       .join("\n")
 
-    const total = payments.reduce((sum, p) => sum + Number(p.amount), 0)
-    const balance = Number(receivedAmount) - total
+    let token = ""
+    const { data: existingToken } = await supabase
+      .from("dashboard_tokens")
+      .select("token")
+      .eq("user_id", userId)
+      .eq("month", month)
+      .eq("year", year)
+      .maybeSingle()
+
+    if (existingToken?.token) {
+      token = existingToken.token
+    } else {
+      token = crypto.randomUUID()
+      const { error: insertError } = await supabase.from("dashboard_tokens").insert([
+        {
+          user_id: userId,
+          token,
+          month,
+          year,
+          created_at: new Date().toISOString(),
+        },
+      ])
+      if (insertError) {
+        console.error("Error inserting dashboard token:", insertError)
+        alert("Failed to generate access token.")
+        setLoading(false)
+        return
+      }
+    }
 
     try {
       await emailjs.send(
@@ -83,10 +133,11 @@ export default function EmailSummaryPage() {
           year: year.toString(),
           bill_summary,
           total: total.toFixed(2),
-          received: Number(receivedAmount).toFixed(2),
+          received: moneyReceived.toFixed(2),
           balance: balance.toFixed(2),
+          token,
         },
-        "hArF77Z5OPjhZiatw",
+        "hArF77Z5OPjhZiatw"
       )
       setShowSuccess(true)
     } catch (err) {
@@ -96,9 +147,6 @@ export default function EmailSummaryPage() {
 
     setLoading(false)
   }
-
-  const total = payments.reduce((sum, p) => sum + Number(p.amount), 0)
-  const balance = Number(receivedAmount) - total
 
   return (
     <div className="min-h-screen bg-background text-white">
@@ -128,7 +176,7 @@ export default function EmailSummaryPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Summary Preview Card */}
-        {payments.length > 0 && receivedAmount && (
+        {payments.length > 0 && (
           <div className="mb-8 bg-black/40 backdrop-blur-md p-6 rounded-2xl border border-neonGreen/20">
             <div className="flex items-center space-x-3 mb-4">
               <div className="bg-neonGreen/20 p-2 rounded-lg">
@@ -143,7 +191,7 @@ export default function EmailSummaryPage() {
               </div>
               <div className="bg-neonGreen/10 p-4 rounded-xl">
                 <p className="text-sm text-mutedText">Received</p>
-                <p className="text-xl font-bold text-neonGreen">LKR {Number(receivedAmount).toFixed(2)}</p>
+                <p className="text-xl font-bold text-neonGreen">LKR {moneyReceived.toFixed(2)}</p>
               </div>
               <div className={`p-4 rounded-xl ${balance >= 0 ? "bg-green-500/10" : "bg-red-500/10"}`}>
                 <p className="text-sm text-mutedText">Balance</p>
@@ -204,7 +252,12 @@ export default function EmailSummaryPage() {
                     ))}
                   </select>
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                    <svg className="w-5 h-5 text-neonGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5 text-neonGreen"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
@@ -229,29 +282,17 @@ export default function EmailSummaryPage() {
                     ))}
                   </select>
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                    <svg className="w-5 h-5 text-neonGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5 text-neonGreen"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Money Received */}
-            <div className="space-y-2">
-              <label className="flex items-center space-x-2 text-sm font-medium">
-                <DollarSign className="w-4 h-4 text-neonGreen" />
-                <span>Money Received (LKR)</span>
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                value={receivedAmount}
-                onChange={(e) => setReceivedAmount(e.target.value)}
-                placeholder="e.g. 20000"
-                className="w-full px-4 py-3 rounded-xl bg-black/60 border border-neonGreen/30 focus:border-neonGreen focus:outline-none focus:ring-2 focus:ring-neonGreen/20 text-white transition-all duration-300"
-                required
-              />
             </div>
 
             {/* Bills Found Info */}
@@ -272,7 +313,7 @@ export default function EmailSummaryPage() {
             <div className="pt-4">
               <button
                 onClick={sendEmail}
-                disabled={loading || !recipient || !receivedAmount}
+                disabled={loading || !recipient}
                 className="w-full bg-gradient-to-r from-neonBlue to-neonGreen text-background px-6 py-4 rounded-xl font-bold text-lg shadow-neon hover:shadow-neonGreen hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center space-x-3"
               >
                 {loading ? (
