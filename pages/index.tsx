@@ -26,6 +26,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-white overflow-hidden scroll-smooth">
       <Head>
+        <title>PayLedger | Simple Bill Management</title>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
       </Head>
       <Header />

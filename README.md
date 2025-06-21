@@ -1,4 +1,15 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# PayLedger
+
+Never miss a bill again. Simple, beautiful bill management that actually works.
+
+Built from personal frustration with scattered bills and forgotten payments. PayLedger helps you track all your bills with their due dates, share with family, and understand your spending patterns without the overwhelming complexity.
+
+## Features
+
+- **Never Miss a Due Date**: Track all your bills with their due dates in a simple calendar view
+- **Share with Family**: Share bills with your partner or family so everyone stays in the loop
+- **See Your Patterns**: Understand where your money goes with simple analytics
+- **Simple & Beautiful**: Clean interface that actually works without overwhelming complexity
 
 ## Getting Started
 
@@ -24,12 +35,22 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Tech Stack
+
+- [Next.js](https://nextjs.org) - React framework
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Supabase](https://supabase.com/) - Backend and authentication
+- [Lucide React](https://lucide.dev/) - Icons
+- [React Chart.js 2](https://react-chartjs-2.js.org/) - Charts and analytics
+
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+To learn more about the technologies used:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API
+- [Supabase Documentation](https://supabase.com/docs) - learn about Supabase features
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs) - learn about Tailwind CSS
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 

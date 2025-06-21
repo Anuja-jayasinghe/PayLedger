@@ -45,6 +45,8 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
+        <title>PayLedger</title>
+        <meta name="description" content="Never miss a bill again. Simple, beautiful bill management that actually works." />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </Head>
       <div className="min-h-screen bg-background">
