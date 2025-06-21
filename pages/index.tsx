@@ -3,10 +3,9 @@
 import { DollarSign, Calendar, Target, TrendingUp, ArrowRight, Shield, Sparkles, ChevronDown } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import Header from "@/components/Header"
+import Header from "@/components/Navigation"
 import Footer from "@/components/Footer"
 import Head from "next/head"
-import Image from "next/image"
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
