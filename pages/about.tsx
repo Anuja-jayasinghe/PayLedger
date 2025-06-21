@@ -4,7 +4,7 @@ import { DollarSign, Target, Mail, Calendar, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import Header from "@/components/Navigation"
-import Footer from "@/components/footer"
+import Footer from "@/components/Footer"
 import Head from "next/head"
 
 export default function About() {

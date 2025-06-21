@@ -16,7 +16,7 @@ import {
 } from "chart.js"
 import Link from "next/link"
 import Header from "@/components/Header"
-import Footer from "@/components/footer"
+import Footer from "@/components/Footer"
 import {
   Plus,
   ChevronLeft,
