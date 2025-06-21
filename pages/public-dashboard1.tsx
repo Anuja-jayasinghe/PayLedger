@@ -27,7 +27,6 @@ import {
   DollarSign,
   Lock,
   Eye,
-  Github,
 } from "lucide-react"
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Tooltip, Legend)
@@ -340,19 +339,54 @@ export default function PublicDashboard() {
 
   return (
     <div className="min-h-screen bg-background text-white">
-      {/* Public Header */}
-      <div className="bg-black/20 border-b border-neonBlue/20">
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-3 mb-2">
-              <div className="bg-neonBlue/20 p-2 rounded-lg">
-                <Eye className="w-6 h-6 text-neonBlue" />
+      {/* Enhanced Public Header */}
+      <div className="relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-64 h-64 bg-neonBlue/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute top-0 right-1/4 w-64 h-64 bg-neonGreen/5 rounded-full blur-3xl animate-pulse delay-1000" />
+        </div>
+
+        <div className="bg-black/20 border-b border-neonBlue/20 backdrop-blur-md relative z-10">
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="text-center">
+              {/* Logo and branding */}
+              <div className="flex items-center justify-center space-x-4 mb-6">
+                <div className="relative">
+                  <div className="bg-gradient-to-r from-neonBlue to-neonGreen p-4 rounded-2xl shadow-neon animate-float">
+                    <DollarSign className="w-8 h-8 text-background" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-neonGreen rounded-full animate-pulse" />
+                </div>
+                <div>
+                  <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-neonBlue via-white to-neonGreen bg-clip-text text-transparent">
+                    PayLedger
+                  </h1>
+                  <p className="text-sm text-neonBlue font-medium">Financial Dashboard</p>
+                </div>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-neonBlue to-neonGreen bg-clip-text text-transparent">
-                PayLedger Dashboard
-              </h1>
+
+              {/* Status badges */}
+              <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
+                <div className="flex items-center space-x-2 bg-neonBlue/10 border border-neonBlue/30 px-4 py-2 rounded-full">
+                  <Eye className="w-4 h-4 text-neonBlue" />
+                  <span className="text-sm font-medium text-neonBlue">Public View</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-green-500/10 border border-green-500/30 px-4 py-2 rounded-full">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-sm font-medium text-green-400">Live Data</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-yellow-500/10 border border-yellow-500/30 px-4 py-2 rounded-full">
+                  <Lock className="w-4 h-4 text-yellow-400" />
+                  <span className="text-sm font-medium text-yellow-400">Read Only</span>
+                </div>
+              </div>
+
+              <p className="text-mutedText text-sm max-w-2xl mx-auto leading-relaxed">
+                You're viewing a secure, shared dashboard with real-time financial data. Navigate through different
+                months to explore payment history and spending patterns.
+              </p>
             </div>
-            <p className="text-mutedText text-sm">Public View - Read Only Access</p>
           </div>
         </div>
       </div>
@@ -574,42 +608,98 @@ export default function PublicDashboard() {
           )}
         </div>
 
-        {/* Footer Notice */}
-        <div className="mt-8 text-center">
-          <div className="bg-black/40 backdrop-blur-md p-4 rounded-xl border border-neonBlue/20 inline-block">
-            <p className="text-sm text-mutedText">
-              This is a read-only public view of the PayLedger dashboard. Data is shared via secure token access.
-            </p>
-          </div>
-        </div>
-        {/* Final Footer */}
-<footer className="mt-16 border-t border-white/10 pt-6 text-center text-sm text-mutedText">
-  <p className="flex items-center justify-center space-x-4">
-    <span>© {new Date().getFullYear()} PayLedger · Built by Anuja Jayasinghe</span>
-    <div className="flex items-center space-x-3">
-      <a
-        href="https://anujajay.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-neonBlue hover:text-neonGreen transition-colors duration-300 flex items-center space-x-1"
-      >
-        <span>anujajay.com</span>
-      </a>
-      <span className="text-mutedText">·</span>
-      <a
-        href="https://github.com/Anuja-jayasinghe"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-neonBlue hover:text-neonGreen transition-colors duration-300 flex items-center space-x-1"
-      >
-        <Github className="w-4 h-4" />
-        <span>GitHub</span>
-      </a>
-    </div>
-  </p>
-</footer>
+        {/* Custom Footer */}
+        <footer className="mt-16 border-t border-neonBlue/20 bg-black/20 backdrop-blur-md">
+          <div className="max-w-6xl mx-auto px-4 py-12">
+            <div className="grid md:grid-cols-3 gap-8 mb-8">
+              {/* Brand Section */}
+              <div className="text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start space-x-3 mb-4">
+                  <div className="bg-gradient-to-r from-neonBlue to-neonGreen p-2 rounded-lg">
+                    <DollarSign className="w-6 h-6 text-background" />
+                  </div>
+                  <span className="text-xl font-bold bg-gradient-to-r from-neonBlue to-neonGreen bg-clip-text text-transparent">
+                    PayLedger
+                  </span>
+                </div>
+                <p className="text-mutedText text-sm leading-relaxed">
+                  Simple, beautiful bill tracking that actually works. Built from personal frustration with scattered
+                  bills and forgotten payments.
+                </p>
+              </div>
 
+              {/* Features Section */}
+              <div className="text-center">
+                <h3 className="text-lg font-semibold mb-4 text-neonGreen">Dashboard Features</h3>
+                <ul className="space-y-2 text-sm text-mutedText">
+                  <li className="flex items-center justify-center space-x-2">
+                    <TrendingUp className="w-4 h-4 text-neonBlue" />
+                    <span>Interactive Charts</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <Calendar className="w-4 h-4 text-neonGreen" />
+                    <span>Monthly Navigation</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <PieChart className="w-4 h-4 text-purple-400" />
+                    <span>Category Breakdown</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <History className="w-4 h-4 text-yellow-400" />
+                    <span>Payment History</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Security Section */}
+              <div className="text-center md:text-right">
+                <h3 className="text-lg font-semibold mb-4 text-neonBlue">Security & Privacy</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-center md:justify-end space-x-2 text-sm">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                    <span className="text-green-400">Secure Token Access</span>
+                  </div>
+                  <div className="flex items-center justify-center md:justify-end space-x-2 text-sm">
+                    <Lock className="w-4 h-4 text-neonBlue" />
+                    <span className="text-mutedText">Read-Only Permissions</span>
+                  </div>
+                  <div className="flex items-center justify-center md:justify-end space-x-2 text-sm">
+                    <Eye className="w-4 h-4 text-neonGreen" />
+                    <span className="text-mutedText">No Personal Data Exposed</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Section */}
+            <div className="border-t border-neonBlue/20 pt-8">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="text-center md:text-left">
+                  <p className="text-sm text-mutedText">
+                    © 2024 PayLedger. A personal project solving a personal problem.
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-6">
+                  <div className="text-xs text-mutedText bg-black/40 px-3 py-1 rounded-full border border-neonBlue/20">
+                    Dashboard Version 2.0
+                  </div>
+                  <div className="text-xs text-mutedText">Last Updated: {new Date().toLocaleDateString()}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   )
 }
