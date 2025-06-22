@@ -49,12 +49,23 @@ export default function Login() {
         </svg>
         <span>Sign in with Google</span>
       </button>
-      <button
-        onClick={() => window.location.href = '/'}
-        className="mt-4 bg-white/10 text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors"
-      >
-        Go to Home
-      </button>
+
+      <div className="flex items-center gap-4 mt-6">
+        <button
+          onClick={() => (window.location.href = "/")}
+          className="bg-white/10 text-white px-6 py-2 rounded-md font-medium text-sm hover:bg-white/20 transition-colors"
+        >
+          Go to Home
+        </button>
+        <a
+          href="https://payledger.anujajay.com/public-dashboard?token=demo-dashboard"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-neonGreen/10 text-neonGreen px-6 py-2 rounded-md font-medium text-sm hover:bg-neonGreen/20 transition-colors"
+        >
+          View Demo
+        </a>
+      </div>
     </div>
   )
 }

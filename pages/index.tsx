@@ -98,6 +98,15 @@ export default function Home() {
               <ChevronDown className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
             </button>
           </div>
+          <a
+            href="https://payledger.anujajay.com/public-dashboard?token=nayana-dash"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-neonBlue hover:text-neonGreen transition-colors duration-300 inline-flex items-center space-x-2 group"
+          >
+            <span>View Demo Dashboard</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </a>
 
           {/* Scroll indicator */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce ">
