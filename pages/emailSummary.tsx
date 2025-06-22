@@ -83,20 +83,14 @@ export default function EmailSummaryPage() {
       return acc
     }, {} as Record<string, any[]>)
 
-    const grouped_bills_html = Object.entries(grouped)
+    const bill_summary = Object.entries(grouped)
       .map(([type, entries]) => {
         const lines = (entries as any[])
-          .map(
-            (e) => `
-        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(56,189,248,0.3); backdrop-filter: blur(8px); border-radius: 10px; padding: 10px 14px; font-size: 14px;">
-          <strong style="color: #38bdf8;">${type}</strong> — ${e.account_number || "N/A"}: LKR ${Number(e.amount).toFixed(2)}
-        </div>
-      `
-          )
-          .join("")
-        return lines
+          .map((e) => `• ${e.account_number || "N/A"} - LKR ${Number(e.amount).toFixed(2)}`)
+          .join("\n")
+        return `\n${type}:\n${lines}`
       })
-      .join("")
+      .join("\n")
 
     let token = ""
     const { data: existingToken } = await supabase
@@ -137,7 +131,7 @@ export default function EmailSummaryPage() {
           subject: `Bill Summary for ${month}/${year}`,
           month_name: new Date(year, month - 1).toLocaleString("default", { month: "long" }),
           year: year.toString(),
-          grouped_bills_html,
+          bill_summary,
           total: total.toFixed(2),
           received: moneyReceived.toFixed(2),
           balance: balance.toFixed(2),
