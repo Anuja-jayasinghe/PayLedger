@@ -29,6 +29,7 @@ import {
   Lock,
   Eye,
   Github,
+  Home,
 } from "lucide-react"
 
 ChartJS.register(
@@ -354,7 +355,17 @@ export default function PublicDashboard() {
       {/* Public Header */}
       <div className="bg-black/20 border-b border-neonBlue/20">
         <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="text-center">
+          <div className="text-center relative">
+            {/* Home Button */}
+            <div className="absolute left-0 top-1/2 transform -translate-y-1/2">
+              <a
+                href="/"
+                className="p-2 rounded-lg bg-black/40 border border-neonBlue/30 hover:border-neonBlue hover:bg-neonBlue/10 transition-all duration-300 group"
+              >
+                <Home className="w-5 h-5 text-neonBlue group-hover:scale-110 transition-transform" />
+              </a>
+            </div>
+            
             <div className="flex items-center justify-center space-x-3 mb-2">
               <div className="bg-neonBlue/20 p-2 rounded-lg">
                 <Eye className="w-6 h-6 text-neonBlue" />
