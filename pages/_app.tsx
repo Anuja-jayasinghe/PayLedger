@@ -45,9 +45,41 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>PayLedger</title>
-        <meta name="description" content="Never miss a bill again. Simple, beautiful bill management that actually works." />
+        <title>PayLedger - Simple Bill Management</title>
+        <meta
+          name="description"
+          content="Never miss a bill again. Simple, beautiful bill management that actually works. Track payments, view spending habits, and share monthly summaries."
+        />
+        <meta name="author" content="Anuja Jayasinghe" />
+        <meta
+          name="keywords"
+          content="PayLedger, bill management, payment tracker, finance, personal finance, spending tracker, budget"
+        />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content="PayLedger - Simple Bill Management" />
+        <meta
+          property="og:description"
+          content="Never miss a bill again. Simple, beautiful bill management that actually works."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://payledger.anujajay.com" />
+        <meta property="og:image" content="https://payledger.anujajay.com/logo.png" />
+        <meta property="og:site_name" content="PayLedger" />
+
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="PayLedger - Simple Bill Management" />
+        <meta
+          name="twitter:description"
+          content="Never miss a bill again. Simple, beautiful bill management that actually works."
+        />
+        <meta name="twitter:image" content="https://payledger.anujajay.com/logo.png" />
+
+        {/* Additional Meta Tags */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#14F195" />
       </Head>
       <div className="min-h-screen bg-background">
         <Component {...pageProps} />
