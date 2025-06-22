@@ -3,11 +3,12 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
-import { Line, Pie, Chart as ChartJSComponent } from "react-chartjs-2"
+import { Chart, Line, Pie } from "react-chartjs-2"
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
+  BarController,
   BarElement,
   PointElement,
   LineElement,
@@ -30,7 +31,17 @@ import {
   Github,
 } from "lucide-react"
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Tooltip, Legend)
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarController,
+  BarElement,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Tooltip,
+  Legend
+)
 
 interface Payment {
   id: string
@@ -515,7 +526,41 @@ export default function PublicDashboard() {
             </div>
 
             <div className="h-64">
-              {chartType === "bar" && <ChartJSComponent type="bar" data={barLineChartData} options={{}} />}
+              {chartType === "bar" && (
+                <Chart
+                  type="bar"
+                  data={barLineChartData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        labels: {
+                          color: "#ffffff", // white text on dark background
+                        },
+                      },
+                    },
+                    scales: {
+                      x: {
+                        ticks: {
+                          color: "#ffffff",
+                        },
+                        grid: {
+                          color: "#333",
+                        },
+                      },
+                      y: {
+                        ticks: {
+                          color: "#ffffff",
+                        },
+                        grid: {
+                          color: "#333",
+                        },
+                      },
+                    },
+                  }}
+                />
+              )}
               {chartType === "line" && <Line data={lineChartData} />}
               {chartType === "pie" && (
                 <div
