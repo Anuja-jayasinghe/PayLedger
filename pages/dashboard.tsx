@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
-import { Line, Pie, Chart as ChartJSComponent } from "react-chartjs-2"
+import { Bar, Line, Pie, Chart } from "react-chartjs-2"
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -494,7 +494,41 @@ export default function Dashboard() {
             </div>
 
             <div className="h-64">
-              {chartType === "bar" && <ChartJSComponent type="bar" data={barLineChartData} options={{}} />}
+              {chartType === "bar" && (
+                <Chart
+                  type="bar"
+                  data={barLineChartData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        labels: {
+                          color: "#ffffff", // white text on dark background
+                        },
+                      },
+                    },
+                    scales: {
+                      x: {
+                        ticks: {
+                          color: "#ffffff",
+                        },
+                        grid: {
+                          color: "#333",
+                        },
+                      },
+                      y: {
+                        ticks: {
+                          color: "#ffffff",
+                        },
+                        grid: {
+                          color: "#333",
+                        },
+                      },
+                    },
+                  }}
+                />
+              )}
               {chartType === "line" && <Line data={lineChartData} />}
               {chartType === "pie" && (
                 <div
@@ -523,6 +557,7 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
+
           </div>
         </div>
 
