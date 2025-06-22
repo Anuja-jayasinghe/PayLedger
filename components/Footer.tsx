@@ -2,7 +2,7 @@ import { Github } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="mt-16 border-t border-white/10 pt-6 text-center text-sm text-mutedText">
+    <footer className="mt-16 mb-10 border-t border-white/10 pt-6 text-center text-sm text-mutedText">
       <div className="flex flex-col items-center justify-center space-y-3">
         <p>
           © {new Date().getFullYear()} PayLedger · Built by Anuja Jayasinghe
