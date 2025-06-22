@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { DollarSign, Menu, X } from "lucide-react"
+import { BarChart3 } from 'lucide-react'
 import Link from "next/link"
 
 export default function Header() {
@@ -105,6 +106,14 @@ export default function Header() {
             </Link>
             
             <div className="border-t border-neonBlue/20 pt-4 px-2 space-y-2">
+              <Link
+                href="/dashboard"
+                className="hover:text-neonGreen transition-colors duration-300 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-neonGreen/50"
+                title="Dashboard"
+                aria-label="Dashboard"
+              >
+                <BarChart3 className="w-6 h-6" />
+              </Link>
               <Link
                 href="/login"
                 className="block px-4 py-2 text-white hover:text-neonBlue hover:bg-neonBlue/10 transition-all duration-300 rounded-lg"
