@@ -99,7 +99,7 @@ export default function Home() {
             </button>
           </div>
           <a
-            href="https://payledger.anujajay.com/public-dashboard?token=nayana-dash"
+            href="https://payledger.anujajay.com/public-dashboard?token=demo-dashboard"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-neonBlue hover:text-neonGreen transition-colors duration-300 inline-flex items-center space-x-2 group"
